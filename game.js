@@ -63,7 +63,7 @@ function Game(){
   const [score, setScore] = useState(0);
   const [playerName, setPlayerName] = useState("");
   const [feedback, setFeedback] = useState(null);  // 'good'|'wrong'|null
-  const FEEDBACK_MS = 2000; // prodlouženo na 2 s
+  const FEEDBACK_MS = 2000; // 2 s
 
   useEffect(()=>{ preload(Object.values(ASSETS)); },[]);
 
@@ -145,9 +145,9 @@ function Game(){
   );
 
   const Intro2 = h(React.Fragment,null,
-    /* Erika o 15 px výš nad dialogem */
+    /* Erika: o 10 % menší (CSS) + o něco výš než dialog (+22 px) */
     h("img",{className:"character erika", src:ASSETS.erika, alt:"Erika",
-      style:{ bottom: (d2h + 15) + "px" }}),
+      style:{ bottom: (d2h + 22) + "px" }}),
     h("div",{className:"dialog", ref:d2Ref},
       h("div",{className:"dialog-inner"},
         h("p",null,"8 správně = překvapení. Méně než 3 = taky překvapení (hluboké pohrdání).")
@@ -160,7 +160,7 @@ function Game(){
   );
 
   const Quiz = h(React.Fragment,null,
-    /* tmavá vrstva pod feedbackem */
+    /* tmavá vrstva pod feedbackem – 65 % */
     h("div",{className:"dim" + (feedback ? " show" : "")}),
     /* feedback badge */
     h("img",{ className:"feedback" + (feedback ? " show": ""),
@@ -235,7 +235,12 @@ function Game(){
         h("div",{className:"results"},
           db
             ? (recent.length
-                ? recent.map((r,i)=>h("p",{key:i}, `${r.name || "?"}: ${r.score}/${r.total} (${r.pct || Math.round((r.score/r.total)*100)} %)`))
+                ? recent.map((r,i)=>{
+                    const pct = r.pct ?? Math.round((r.score/r.total)*100);
+                    const cls = pct >= 80 ? "pro" : "";
+                    return h("p",{key:i, className:cls},
+                      `${r.name || "?"}: ${r.score}/${r.total} (${pct} %)`);
+                  })
                 : h("p",null,"Načítám výsledky…"))
             : h("p",null,"Offline režim: Firebase není dostupné.")
         )
