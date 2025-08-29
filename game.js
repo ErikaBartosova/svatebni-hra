@@ -2,7 +2,6 @@ const { useEffect, useMemo, useRef, useState, useLayoutEffect } = React;
 const h = React.createElement;
 const u = (name) => encodeURI("./" + name);
 
-// assets
 const ASSETS = {
   logo: u("kvíz logo.png"),
   petr: u("Petr.png"),
@@ -16,7 +15,6 @@ const ASSETS = {
   bgFinal: u("závěrečné pozadí.jpg"),
 };
 
-// otázky
 const QUESTIONS = [
   { q: "Kolik prstů celkem máme?", options: ["41","40","39"], correct: 1 },
   { q: "Jak se jmenuje nejoblíbenější Pokémon Eriky?", options: ["Eevee","Jaromír","Jigglypuff"], correct: 2 },
@@ -65,7 +63,7 @@ function Game(){
   const [score, setScore] = useState(0);
   const [playerName, setPlayerName] = useState("");
   const [feedback, setFeedback] = useState(null);  // 'good'|'wrong'|null
-  const FEEDBACK_MS = 1500;
+  const FEEDBACK_MS = 2000; // prodlouženo na 2 s
 
   useEffect(()=>{ preload(Object.values(ASSETS)); },[]);
 
@@ -90,7 +88,7 @@ function Game(){
     return ()=>window.removeEventListener("resize", recalc);
   },[]);
 
-  // výška panelu otázek pro umístění feedbacku
+  // výška panelu otázek pro feedback
   const qpRef = useRef(null);
   const [qpH, setQpH] = useState(0);
   useLayoutEffect(()=>{
@@ -131,7 +129,7 @@ function Game(){
       });
   },[db,screen]);
 
-  // logo: není na quiz/result/score/name
+  // logo: neukazovat na quiz/result/score/name
   const showLogo = !["quiz","result","score","name"].includes(screen);
 
   /* ---------- UI ---------- */
@@ -147,7 +145,9 @@ function Game(){
   );
 
   const Intro2 = h(React.Fragment,null,
-    h("img",{className:"character erika", src:ASSETS.erika, alt:"Erika", style:{ bottom: d2h + "px" }}),
+    /* Erika o 15 px výš nad dialogem */
+    h("img",{className:"character erika", src:ASSETS.erika, alt:"Erika",
+      style:{ bottom: (d2h + 15) + "px" }}),
     h("div",{className:"dialog", ref:d2Ref},
       h("div",{className:"dialog-inner"},
         h("p",null,"8 správně = překvapení. Méně než 3 = taky překvapení (hluboké pohrdání).")
@@ -160,9 +160,9 @@ function Game(){
   );
 
   const Quiz = h(React.Fragment,null,
-    /* dim layer pod good/wrong */
+    /* tmavá vrstva pod feedbackem */
     h("div",{className:"dim" + (feedback ? " show" : "")}),
-    /* feedback badge nad panelem */
+    /* feedback badge */
     h("img",{ className:"feedback" + (feedback ? " show": ""),
       src: feedback==="good" ? ASSETS.good : ASSETS.wrong, alt:"feedback",
       style:{ bottom: qpH + "px" }
@@ -186,7 +186,7 @@ function Game(){
         ),
         h("div",{className:"row"},
           h("button",{
-            className:"btn btn-green", /* zelené a výraznější */
+            className:"btn btn-green",
             disabled: selected===null || chosen!==null,
             onClick:onSubmit
           },"Zvolit")
@@ -250,7 +250,7 @@ function Game(){
   );
 
   return h("div",{className:"game"},
-    h("div",{className:`screen ${screen}`, style:{backgroundImage:`url('${bg}')`}},
+    h("div",{className:`screen ${screen} ${screen==="quiz" ? "quiz" : ""}`, style:{backgroundImage:`url('${bg}')`}},
       showLogo && h("img",{className:"logo", src:ASSETS.logo, alt:"kviz logo"}),
       screen==="intro1" ? Intro1 :
       screen==="intro2" ? Intro2 :
