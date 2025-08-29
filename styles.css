@@ -7,7 +7,7 @@
   --panel-inner:#f4f6f8;
   --text:#101114;
   --shadow:0 8px 24px rgba(0,0,0,.35);
-  --logo-scale:.70; /* logo -30 % */
+  --logo-scale:.70;
 }
 
 *{box-sizing:border-box}
@@ -16,12 +16,10 @@ body{
   margin:0;
   background:#000;
   color:var(--text);
-  /* nový čitelnější font */
-  font:16px/1.35 "Varela Round", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font:16px/1.35 "Varela Round",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   letter-spacing:.2px;
 }
 
-/* Plátno */
 .game{
   height:100%;
   display:grid;
@@ -43,42 +41,29 @@ body{
   image-rendering: pixelated;
 }
 
-/* posun gifu u snímků s otázkami (o ~50 px nahoru) */
-.quiz{
-  background-position: center calc(50% - 50px);
-}
+/* posun gifu na otázkách */
+.quiz{ background-position:center calc(50% - 50px); }
 
-/* logo (schováváme ho na .quiz, .result, .score, .name v JS) */
 .logo{
-  position:absolute;
-  left:50%; transform:translateX(-50%) scale(var(--logo-scale));
-  transform-origin: top center;
-  top:10px;
-  width:min(220px,60%);
-  pointer-events:none;
+  position:absolute; left:50%; transform:translateX(-50%) scale(var(--logo-scale));
+  transform-origin: top center; top:10px; width:min(220px,60%); pointer-events:none;
   image-rendering: pixelated;
 }
 
-/* ikonka výsledků (Intro1) – +20 % */
 .results-icon{
-  position:absolute; top:12px; right:12px;
-  width:38px; height:38px;
-  cursor:pointer; image-rendering: pixelated;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,.6));
+  position:absolute; top:12px; right:12px; width:38px; height:38px; cursor:pointer;
+  image-rendering: pixelated; filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
 }
 
-/* postavy nad dialogem */
 .character{
   position:absolute; left:50%; transform:translateX(-50%);
   width:54%; max-width:260px; image-rendering: pixelated;
 }
 .character.erika{ width:43%; }
 
-/* dialog */
 .dialog{
   position:absolute; left:50%; transform:translateX(-50%);
-  bottom:16px; width:92%;
-  background:var(--panel); border:2px solid #1f2937;
+  bottom:16px; width:92%; background:var(--panel); border:2px solid #1f2937;
   border-radius:14px; padding:16px;
 }
 .dialog-inner{
@@ -86,94 +71,74 @@ body{
   padding:14px 14px; margin-bottom:12px; font-weight:600;
 }
 
-/* tlačítka – delší o ~20 %, větší text 14 px */
+/* delší tlačítka + větší text */
 .row{display:flex; gap:12px; justify-content:flex-end}
 .btn{
   border:none; border-radius:12px;
-  padding:12px 26px; /* širší (delší) */
-  font-weight:800; font-size:14px; /* větší text */
-  cursor:pointer; box-shadow:inset 0 -2px rgba(0,0,0,.25);
-  letter-spacing:.3px;
+  padding:12px 26px; font-weight:800; font-size:14px;
+  cursor:pointer; box-shadow:inset 0 -2px rgba(0,0,0,.25); letter-spacing:.3px;
 }
 .btn:active{transform:translateY(1px)}
 .btn-blue{background:var(--blue); color:#fff; border:2px solid var(--blue-dark)}
 .btn-green{background:var(--green); color:#fff; border:2px solid var(--green-dark)}
 .btn-gray{background:#e5e7eb; color:#111827; border:2px solid #9ca3af}
 .btn[disabled]{opacity:.6; filter:grayscale(.2); cursor:not-allowed}
-
-/* větší CTA */
 .btn-lg{ padding:12px 30px; font-size:16px; }
 
 /* panel otázek */
-.question-panel{
-  position:absolute; left:50%; transform:translateX(-50%);
-  bottom:0; width:100%;
-}
+.question-panel{ position:absolute; left:50%; transform:translateX(-50%); bottom:0; width:100%; }
 .q-header{
-  background:var(--blue); color:#fff;
-  padding:12px 14px; font-weight:900;
+  background:var(--blue); color:#fff; padding:12px 14px; font-weight:900;
   display:flex; justify-content:space-between; align-items:center;
 }
-.q-body{
-  padding:14px; background:var(--panel); border-top:2px solid #1f2937;
-}
+.q-body{ padding:14px; background:var(--panel); border-top:2px solid #1f2937; }
 
-/* výběr odpovědí */
+/* volby */
 .choice{
   background:#fff; border:2px solid #cbd5e1; border-radius:10px;
   padding:12px 14px; margin-bottom:12px; cursor:pointer; font-weight:800;
 }
 .choice:hover{filter:brightness(0.98)}
-/* označení před potvrzením */
 .choice.selected{ border-color:#6366f1; background:#eef2ff }
-/* po vyhodnocení (odhalení) – silný zelený stroke pro správnou */
+/* po vyhodnocení */
 .revealed .choice.correct{ border-color:#16a34a; border-width:4px; background:#e9f8ee }
 .revealed .choice.wrong{ border-color:#dc2626; background:#fde8e8 }
 
-/* feedback overlay pod good/wrong */
-.dim{
-  position:absolute; inset:0; background:rgba(0,0,0,.25); display:none;
-}
+/* tmavá vrstva pod feedbackem – zvýšená na 40 % */
+.dim{ position:absolute; inset:0; background:rgba(0,0,0,.40); display:none; }
 .dim.show{ display:block }
 
-/* feedback ikonka */
+/* feedback badge */
 .feedback{
   position:absolute; left:50%; transform:translateX(-50%);
-  bottom:0; width:54%; max-width:260px; height:auto; display:none;
-  image-rendering: pixelated;
+  bottom:0; width:54%; max-width:260px; height:auto; display:none; image-rendering:pixelated;
 }
 .feedback.show{display:block}
 
-/* výsledky – velké číslo uprostřed */
+/* výsledky – velké číslo */
 .big-score{
   position:absolute; top:45%; left:50%; transform:translate(-50%,-50%);
-  font-size:76px; font-weight:900; color:#fff;
-  text-shadow:0 2px 0 #000, 0 0 12px rgba(0,0,0,.65);
+  font-size:76px; font-weight:900; color:#fff; text-shadow:0 2px 0 #000, 0 0 12px rgba(0,0,0,.65);
 }
 
-/* 1UP */
 .oneup{
-  position:absolute; top:8px; left:12px;
-  font-size:28px; font-weight:900; color:white;
+  position:absolute; top:8px; left:12px; font-size:28px; font-weight:900; color:white;
   text-shadow:0 2px 0 #000, 0 0 8px rgba(0,0,0,.5);
 }
 
-/* seznam výsledků – připravené na 50+ záznamů */
+/* dlouhý seznam výsledků */
 .results{
-  max-height:48vh; /* víc místa na dlouhý seznam */
-  overflow:auto;
-  margin-top:10px; padding:10px;
+  max-height:48vh; overflow:auto; margin-top:10px; padding:10px;
   background:#fff; border-radius:8px; border:2px solid #cbd5e1;
 }
 .results p{margin:0 0 6px}
 
-/* větší input */
+/* input */
 .input{
   width:100%; padding:14px 16px; border-radius:10px;
   border:2px solid #cbd5e1; background:#fff; font-size:20px; height:50px;
 }
 
-/* malé telefony */
 @media (max-width: 360px){
   .choice{ padding:10px 12px; }
   .q-header{ padding:10px 12px; }
