@@ -2,8 +2,8 @@ name: Deploy static site to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # při každém pushi do main
-  workflow_dispatch:      # možnost spustit ručně v UI
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,15 +18,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Není co buildit – je to čistě statické.
-      # Zabalíme celý obsah repozitáře (kde je index.html v rootu)
+      # Tady se určí co nahrát – celý repozitář (kde je index.html v rootu)
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."     # kořen repa (index.html, CSS, JS, obrázky…)
+          path: .
 
   deploy:
     environment:
