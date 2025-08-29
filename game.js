@@ -150,7 +150,7 @@ function Game(){
       style:{ bottom: (d2h + 22) + "px" }}),
     h("div",{className:"dialog", ref:d2Ref},
       h("div",{className:"dialog-inner"},
-        h("p",null,"8 správně = překvapení. Méně než 3 = taky překvapení (hluboké pohrdání).")
+        h("p",null,"8 správně = překvapení. Méně než 8 = taky překvapení (hluboké pohrdání).")
       ),
       h("div",{className:"row"},
         h("button",{className:"btn btn-gray", onClick:()=>setScreen("intro1")},"Zpět"),
@@ -200,8 +200,8 @@ function Game(){
     h("div",{className:"dialog", style:{bottom:"12px"}},
       h("div",{className:"dialog-inner"},
         pct>=80
-          ? h("p",null,`Tvoje skóre je ${pct} %! Jsi stejně divnej/divná jako Erika a Petr (gratulujeme, I guess). Nezapomeň si vyzvednout dárek!`)
-          : h("p",null,"Tvoje skóre je pod 80 %. Pokud nejsi někdo, kdo tady pracuje, měl bys tomu věnovat víc. A pokud tady pracuješ, tak zpátky do práce!!!! Ale ok, taky si vem dárek.")
+          ? h("p",null,`Jsi stejně divnej/divná jako Erika a Petr (gratulujeme, I guess). Nezapomeň si vyzvednout dárek!`)
+          : h("p",null," Pokud nejsi někdo, kdo tady pracuje, měl bys tomu věnovat víc. A pokud tady pracuješ, tak zpátky do práce!!!! Ale ok, taky si vem dárek.")
       ),
       h("div",{className:"row"},
         h("button",{className:"btn btn-green btn-lg", onClick:()=>setScreen("name")},"Chci odměnu!")
