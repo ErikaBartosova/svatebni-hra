@@ -1,0 +1,221 @@
+:root{
+  --blue:#3B82F6;
+  --blue-dark:#1E40AF;
+  --green:#10B981;
+  --green-dark:#065F46;
+  --panel:#e7eaee;
+  --panel-inner:#f4f6f8;
+  --text:#101114;
+  --shadow:0 8px 24px rgba(0,0,0,.35);
+  --logo-scale:.70; /* logo -30 % */
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0;
+  background:#000;
+  color:var(--text);
+  font:16px/1.35 "Pixelify Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  letter-spacing:.2px;
+}
+
+/* Plátno hry (safe-areas) */
+.game{
+  height:100%;
+  display:grid;
+  place-items:center;
+  padding: max(16px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+           max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+}
+.screen{
+  width:100%;
+  max-width:460px;
+  aspect-ratio: 9 / 16;
+  position:relative;
+  overflow:hidden;
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  background:#0b1120;
+  background-size:cover;
+  background-position:center;
+  image-rendering: pixelated;
+}
+
+/* horní logo – zmenšeno o 30 % */
+.logo{
+  position:absolute;
+  left:50%; transform:translateX(-50%) scale(var(--logo-scale));
+  transform-origin: top center;
+  top:10px;
+  width:min(220px,60%);
+  pointer-events:none;
+  image-rendering: pixelated;
+}
+
+/* ikonka výsledků v intro1 – zvětšeno o 20 % */
+.results-icon{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:38px;    /* původně 32px */
+  height:38px;   /* původně 32px */
+  cursor:pointer;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.6));
+}
+
+/* postavy nad dialogem */
+.character{
+  position:absolute;
+  left:50%; transform:translateX(-50%);
+  width:54%;             /* Petr */
+  max-width:260px;
+  image-rendering: pixelated;
+}
+.character.erika{ width:43%; }  /* Erika -20 % */
+
+/* dialog – víc paddingu pro čitelnost */
+.dialog{
+  position:absolute;
+  left:50%; transform:translateX(-50%);
+  bottom:16px;
+  width:92%;
+  background:var(--panel);
+  border:2px solid #1f2937;
+  border-radius:14px;
+  padding:16px;
+}
+.dialog-inner{
+  background:var(--panel-inner);
+  border-radius:10px;
+  padding:14px 14px;
+  margin-bottom:12px;
+  font-family:"Pixelify Sans",sans-serif;
+  font-weight:600;
+}
+.dialog p{margin:0}
+
+/* tlačítka */
+.row{display:flex; gap:12px; justify-content:flex-end}
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:12px 18px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:inset 0 -2px rgba(0,0,0,.25);
+  font-family:"Pixelify Sans",sans-serif;
+  letter-spacing:.3px;
+}
+.btn:active{transform:translateY(1px)}
+.btn-blue{background:var(--blue); color:#fff; border:2px solid var(--blue-dark)}
+.btn-green{background:var(--green); color:#fff; border:2px solid var(--green-dark)}
+.btn-gray{background:#e5e7eb; color:#111827; border:2px solid #9ca3af}
+.btn[disabled]{opacity:.6; filter:grayscale(.2); cursor:not-allowed}
+
+/* panel otázek – více vnitřního prostoru */
+.question-panel{
+  position:absolute;
+  left:50%; transform:translateX(-50%);
+  bottom:0;
+  width:100%;
+}
+.q-header{
+  background:var(--blue);
+  color:#fff;
+  padding:12px 14px;
+  font-weight:900;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-family:"Pixelify Sans",sans-serif;
+}
+.q-body{
+  padding:14px;
+  background:var(--panel);
+  border-top:2px solid #1f2937;
+}
+.choice{
+  background:#fff;
+  border:2px solid #cbd5e1;
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:12px;
+  cursor:pointer;
+  font-family:"Pixelify Sans",sans-serif;
+  font-weight:800;
+}
+.choice:hover{filter:brightness(0.98)}
+.choice.correct{border-color:#16a34a; background:#e9f8ee}
+.choice.wrong{border-color:#dc2626; background:#fde8e8}
+.choice.selected{ border-color:#6366f1; background:#eef2ff }
+
+/* feedback (good/wrong) – velké jako postavy, nalepené nad panel */
+.feedback{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:0;              /* runtime posun na výšku panelu */
+  width:54%;             /* cca jako Petr */
+  max-width:260px;
+  height:auto;
+  display:none;
+  image-rendering: pixelated;
+}
+.feedback.show{display:block}
+
+/* výsledky – velké číslo uprostřed */
+.big-score{
+  position:absolute;
+  top:45%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:76px;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 2px 0 #000, 0 0 12px rgba(0,0,0,.65);
+  font-family:"Pixelify Sans",sans-serif;
+}
+
+/* 1UP */
+.oneup{
+  position:absolute; top:8px; left:12px;
+  font-size:28px; font-weight:900; color:white;
+  text-shadow:0 2px 0 #000, 0 0 8px rgba(0,0,0,.5);
+  font-family:"Pixelify Sans",sans-serif;
+}
+
+/* seznam výsledků */
+.results{
+  max-height:260px;
+  overflow:auto;
+  margin-top:10px;
+  padding:10px;
+  background:#fff;
+  border-radius:8px;
+  border:2px solid #cbd5e1;
+  font-family:"Pixelify Sans",sans-serif;
+}
+.results p{margin:0 0 6px}
+
+/* zvětšený INPUT (mobil-friendly) */
+.input{
+  width:100%;
+  padding:14px 16px;
+  border-radius:10px;
+  border:2px solid #cbd5e1;
+  background:#fff;
+  font-size:20px;   /* větší písmo */
+  height:50px;      /* větší dotyková plocha */
+  font-family:"Pixelify Sans",sans-serif;
+}
+
+/* menší telefony */
+@media (max-width: 360px){
+  .choice{ padding:10px 12px; }
+  .q-header{ padding:10px 12px; }
+  .dialog{ padding:14px; }
+  .dialog-inner{ padding:12px; }
+  .input{ font-size:18px; height:48px; }
+}

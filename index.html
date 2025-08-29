@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Svatební kvíz</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./styles.css" />
+
+    <!-- React UMD -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Firebase (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script>
+      // Produkční konfigurace Firebase (uloží se do window.FIREBASE_CONFIG)
+      window.FIREBASE_CONFIG = {
+        apiKey: "AIzaSyBUgu2L8ufznmKy3IlbhA2veXnmQv7Ol4g",
+        authDomain: "svatebni-kviz-4bb3a.firebaseapp.com",
+        projectId: "svatebni-kviz-4bb3a",
+        storageBucket: "svatebni-kviz-4bb3a.firebasestorage.app",
+        messagingSenderId: "377177918812",
+        appId: "1:377177918812:web:2178e2a3b99815a6ac8599"
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script src="./game.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
