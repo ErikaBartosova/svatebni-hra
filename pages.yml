@@ -1,0 +1,40 @@
+name: Deploy static site to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]   # při každém pushi do main
+  workflow_dispatch:      # možnost spustit ručně v UI
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # Není co buildit – je to čistě statické.
+      # Zabalíme celý obsah repozitáře (kde je index.html v rootu)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."     # kořen repa (index.html, CSS, JS, obrázky…)
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
