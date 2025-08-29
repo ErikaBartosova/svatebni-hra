@@ -1,10 +1,8 @@
 const { useEffect, useMemo, useRef, useState, useLayoutEffect } = React;
 const h = React.createElement;
-
-// Pomůcka na cesty s diakritikou
 const u = (name) => encodeURI("./" + name);
 
-// Assety (včetně ikony listu)
+// assets
 const ASSETS = {
   logo: u("kvíz logo.png"),
   petr: u("Petr.png"),
@@ -18,7 +16,7 @@ const ASSETS = {
   bgFinal: u("závěrečné pozadí.jpg"),
 };
 
-// Otázky (ponecháno dle poslední verze)
+// otázky
 const QUESTIONS = [
   { q: "Kolik prstů celkem máme?", options: ["41","40","39"], correct: 1 },
   { q: "Jak se jmenuje nejoblíbenější Pokémon Eriky?", options: ["Eevee","Jaromír","Jigglypuff"], correct: 2 },
@@ -32,18 +30,16 @@ const QUESTIONS = [
   { q: "Kdo z nás má daddy issues?", options: ["Erika","Petr","Oba"], correct: 2 },
 ];
 
-function preload(srcs) { srcs.forEach((s)=>{ const i=new Image(); i.src=s; }); }
+function preload(srcs){ srcs.forEach(s=>{ const i=new Image(); i.src=s; }); }
 
-/* ---------- Firebase ---------- */
+/* Firebase */
 function useFirestore(){
   const [db,setDb] = useState(null);
   useEffect(()=>{
     try{
-      const cfg = window.FIREBASE_CONFIG;
-      if(!cfg) return;
       const app = window.firebase.apps?.length
         ? window.firebase.app()
-        : window.firebase.initializeApp(cfg);
+        : window.firebase.initializeApp(window.FIREBASE_CONFIG);
       setDb(window.firebase.firestore(app));
     }catch(e){ console.warn("Firebase init error:", e); }
   },[]);
@@ -64,26 +60,25 @@ function Game(){
   // intro1 -> intro2 -> quiz -> result -> name -> score
   const [screen, setScreen] = useState("intro1");
   const [idx, setIdx] = useState(0);
-  const [selected, setSelected] = useState(null); // uživatel jen vybral (ještě nepotvrdil)
-  const [chosen, setChosen] = useState(null);     // potvrzená/vyhodnocená odpověď
+  const [selected, setSelected] = useState(null);
+  const [chosen, setChosen] = useState(null);
   const [score, setScore] = useState(0);
   const [playerName, setPlayerName] = useState("");
-  const [feedback, setFeedback] = useState(null);  // null | 'good' | 'wrong'
+  const [feedback, setFeedback] = useState(null);  // 'good'|'wrong'|null
   const FEEDBACK_MS = 1500;
 
   useEffect(()=>{ preload(Object.values(ASSETS)); },[]);
 
-  // výběr pozadí
   const bg = useMemo(()=>{
     if(screen==="intro1"||screen==="intro2") return ASSETS.bgIntro;
     if(screen==="quiz") return ASSETS.bgQuiz;
     if(screen==="result") return ASSETS.bgResults;
-    if(screen==="name") return ASSETS.bgFinal;   // snímek 15
-    if(screen==="score") return ASSETS.bgIntro;  // snímek 16
+    if(screen==="name") return ASSETS.bgFinal;
+    if(screen==="score") return ASSETS.bgIntro;
     return ASSETS.bgIntro;
   },[screen]);
 
-  // ---- umístění postav nad dialog (dynamicky podle výšky dialogu) ----
+  // postavy nad dialog
   const d1Ref = useRef(null), d2Ref = useRef(null);
   const [d1h,setD1h]=useState(160), [d2h,setD2h]=useState(160);
   useLayoutEffect(()=>{
@@ -91,82 +86,60 @@ function Game(){
       if(d1Ref.current) setD1h(d1Ref.current.offsetHeight + 16);
       if(d2Ref.current) setD2h(d2Ref.current.offsetHeight + 16);
     }
-    recalc();
-    window.addEventListener("resize", recalc);
+    recalc(); window.addEventListener("resize", recalc);
     return ()=>window.removeEventListener("resize", recalc);
   },[]);
 
-  // ---- výška panelu otázek pro přesné umístění feedbacku ----
+  // výška panelu otázek pro umístění feedbacku
   const qpRef = useRef(null);
   const [qpH, setQpH] = useState(0);
   useLayoutEffect(()=>{
-    function recalc(){ if(qpRef.current) setQpH(qpRef.current.offsetHeight); }
-    recalc();
-    window.addEventListener("resize", recalc);
-    return ()=>window.removeEventListener("resize", recalc);
+    function rec(){ if(qpRef.current) setQpH(qpRef.current.offsetHeight); }
+    rec(); window.addEventListener("resize", rec);
+    return ()=>window.removeEventListener("resize", rec);
   },[screen]);
 
-  // přechody
   const nextIntro = () => setScreen("intro2");
   const startQuiz = () => { setIdx(0); setScore(0); setSelected(null); setChosen(null); setScreen("quiz"); };
-  const toName = () => setScreen("name");
 
-  // logika kvízu
   const current = QUESTIONS[idx];
 
-  // 1) Pouze výběr (bez vyhodnocení)
-  const onSelect = (i) => {
-    if (chosen !== null) return; // při zobrazení feedbacku nelze měnit
-    setSelected(i);
-  };
+  const onSelect = (i) => { if (chosen!==null) return; setSelected(i); };
 
-  // 2) Tlačítko „Další“ provede vyhodnocení + feedback + posun
   const onSubmit = () => {
-    if (selected === null || chosen !== null) return;
+    if (selected===null || chosen!==null) return;
     setChosen(selected);
-
     const correct = (selected === current.correct);
-    if (correct) setScore((s)=>s+1);
+    if (correct) setScore(s=>s+1);
     setFeedback(correct ? "good" : "wrong");
-
-    // po 1.5 s automaticky přejdeme dál
     setTimeout(()=>{
-      setFeedback(null);
-      setChosen(null);
-      setSelected(null);
-      if (idx < QUESTIONS.length - 1){
-        setIdx(idx+1);
-      }else{
-        setScreen("result");
-      }
+      setFeedback(null); setChosen(null); setSelected(null);
+      if (idx < QUESTIONS.length-1) setIdx(idx+1); else setScreen("result");
     }, FEEDBACK_MS);
   };
 
-  const pct = Math.round((score / QUESTIONS.length) * 100);
+  const pct = Math.round((score/QUESTIONS.length)*100);
 
-  /* -------- Firestore -------- */
+  /* Firestore stream pro „score“ */
   const db = useFirestore();
   const [recent, setRecent] = useState([]);
   useEffect(()=>{
     if((screen!=="name" && screen!=="score") || !db) return;
     return db.collection("results").orderBy("ts","desc").limit(50)
-      .onSnapshot((snap)=>{
+      .onSnapshot(snap=>{
         const list=[]; snap.forEach(d=>list.push(d.data())); setRecent(list);
       });
-  },[db, screen]);
+  },[db,screen]);
 
-  // UI: logo neukazujeme na "result" ani "score"
-  const showLogo = screen!=="name" && screen!=="result" && screen!=="score";
+  // logo: není na quiz/result/score/name
+  const showLogo = !["quiz","result","score","name"].includes(screen);
 
-  /* ------ Snímky ------ */
+  /* ---------- UI ---------- */
   const Intro1 = h(React.Fragment,null,
-    // ikonka pro rychlý náhled výsledků
     h("img",{className:"results-icon", src:ASSETS.list, alt:"Výsledky", onClick:()=>setScreen("score")}),
     h("img",{className:"character petr", src:ASSETS.petr, alt:"Petr", style:{ bottom: d1h + "px" }}),
     h("div",{className:"dialog", ref:d1Ref},
-      h("div",{className:"dialog-inner"},
-        h("p",null,"Jak moc znáš Eriku a mě? Hodně? Aha, tak to ukaž.")
-      ),
+      h("div",{className:"dialog-inner"}, h("p",null,"Jak moc znáš Eriku a mě? Hodně? Aha, tak to ukaž.")),
       h("div",{className:"row"},
         h("button",{className:"btn btn-blue", onClick:nextIntro},"Si piš")
       )
@@ -187,7 +160,9 @@ function Game(){
   );
 
   const Quiz = h(React.Fragment,null,
-    // feedback – velký jako postavy a nalepený nad panel (ukáže se až po potvrzení)
+    /* dim layer pod good/wrong */
+    h("div",{className:"dim" + (feedback ? " show" : "")}),
+    /* feedback badge nad panelem */
     h("img",{ className:"feedback" + (feedback ? " show": ""),
       src: feedback==="good" ? ASSETS.good : ASSETS.wrong, alt:"feedback",
       style:{ bottom: qpH + "px" }
@@ -197,12 +172,12 @@ function Game(){
         h("div",null,current.q),
         h("div",null, (idx+1) + "/" + QUESTIONS.length )
       ),
-      h("div",{className:"q-body"},
+      h("div",{className:"q-body" + (chosen!==null ? " revealed" : "")},
         current.options.map((opt,i)=>h("div",{
             key:i,
             className:
               "choice" +
-              (selected===i ? " selected" : "") + // jen označení
+              (selected===i ? " selected" : "") +
               (chosen!==null
                 ? (i===current.correct ? " correct" : (i===chosen ? " wrong" : ""))
                 : ""),
@@ -211,17 +186,16 @@ function Game(){
         ),
         h("div",{className:"row"},
           h("button",{
-            className:"btn btn-blue",
+            className:"btn btn-green", /* zelené a výraznější */
             disabled: selected===null || chosen!==null,
             onClick:onSubmit
-          },"Další")
+          },"Zvolit")
         )
       )
     )
   );
 
   const Result = h(React.Fragment,null,
-    // středové velké skóre, bez good/wrong a bez loga
     h("div",{className:"big-score"}, `${score}/${QUESTIONS.length}`),
     h("div",{className:"dialog", style:{bottom:"12px"}},
       h("div",{className:"dialog-inner"},
@@ -230,23 +204,18 @@ function Game(){
           : h("p",null,"Tvoje skóre je pod 80 %. Pokud nejsi někdo, kdo tady pracuje, měl bys tomu věnovat víc. A pokud tady pracuješ, tak zpátky do práce!!!! Ale ok, taky si vem dárek.")
       ),
       h("div",{className:"row"},
-        h("button",{className:"btn btn-blue", onClick:()=>setScreen("name")},"Chci odměnu!")
+        h("button",{className:"btn btn-green btn-lg", onClick:()=>setScreen("name")},"Chci odměnu!")
       )
     )
   );
 
-  // SNÍMEK 15 – „jméno“
   const NameScreen = h(React.Fragment,null,
     h("div",{className:"oneup"},"1UP"),
     h("div",{className:"dialog", style:{bottom:"18px"}},
       h("div",{className:"dialog-inner"},
         h("p",null,"Vyplň prosím svoje jméno a vyber si dárek ze stolu."),
-        h("input",{
-          className:"input",
-          placeholder:"Tvoje jméno",
-          value:playerName,
-          onChange:(e)=>setPlayerName(e.target.value)
-        })
+        h("input",{ className:"input", placeholder:"Tvoje jméno",
+          value:playerName, onChange:(e)=>setPlayerName(e.target.value) })
       ),
       h("div",{className:"row"},
         h("button",{className:"btn btn-green", onClick: async ()=>{
@@ -259,7 +228,6 @@ function Game(){
     )
   );
 
-  // SNÍMEK 16 – „skore“ (seznam hráčů)
   const ScoreScreen = h(React.Fragment,null,
     h("div",{className:"dialog", style:{bottom:"18px"}},
       h("div",{className:"dialog-inner"},
@@ -274,10 +242,9 @@ function Game(){
       ),
       h("div",{className:"row"},
         h("button",{className:"btn btn-gray", onClick:()=>{
-          // reset do úvodu (záznamy v DB zůstávají)
           setScreen("intro1"); setScore(0); setIdx(0);
           setSelected(null); setChosen(null); setFeedback(null);
-        }},"Ukončit hru")
+        }},"Odejít")
       )
     )
   );
